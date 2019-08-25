@@ -1,0 +1,7 @@
+{
+  "GCLOUD_PROJECT": "upworkbattleio",
+  "DATA_BACKEND": "datastore",
+  "OAUTH2_CLIENT_ID": "889110642403-qm1a53fac0bdov31aihf63kria80n89v.apps.googleusercontent.com",
+  "OAUTH2_CLIENT_SECRET": "2t2iLzA0ggjjpShoSP-Ox6h6 ",
+  "OAUTH2_CALLBACK": "http://localhost:8080/auth/google/callback"
+}

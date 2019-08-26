@@ -14,7 +14,7 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/new', function(req, res){
+app.get('/new/', function(req, res){
   client.connect(err => {
   const collection = client.db("test").collection("wabbitseason");
   var entry1 = {im : 'hunting', some: 'wabbits'};

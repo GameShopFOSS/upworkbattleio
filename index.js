@@ -23,6 +23,11 @@ app.get('/new', function(req, res){
   collection.insert(entry1);
   collection.insert(entry2);
   client.close();
+  if (err){
+    res.send(err);		
+  } else {
+    res.send("IT WORKED");
+  }
 });
 
 });

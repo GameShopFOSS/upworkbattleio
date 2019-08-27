@@ -33,6 +33,12 @@ const collection = client.db("test").collection("wabbitseason");
 
 });
 
+//app.get('/show', function(req, res){
+//client.connect(err => {
+//	if(err)
+//});
+//});
+
 
 http.listen(8080, function(){
   console.log('listening on *:8080');

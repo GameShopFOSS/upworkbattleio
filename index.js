@@ -47,7 +47,7 @@ const collection = client.db("test").collection("wabbitseason");
 //});
 //});
 
-app.get('/leaderboard', function(req, res) {
+app.get('*/leaderboard', function(req, res) {
    var arr = [];
    //var error;
  
@@ -129,7 +129,7 @@ res.send("No leaderboard")
 
 });
 
-app.post('/posttoboard', function(req, res) {
+app.post('*/posttoboard', function(req, res) {
  //client.connect(err => {
   var killfloor = 0;
   if (error){

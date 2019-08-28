@@ -1,13 +1,21 @@
 var app = require('express')();
 var bodyParser = require('body-parser');
 var http = require('http').createServer(app);
-
+//var Arraylist = require('arraylist');
+var async = require('async');
 const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://joshua:upworkbattleio@cluster0-ubdqx.gcp.mongodb.net/test?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true });
+var error;
+client.connect(err => {
+  error = err;
+  if (err) {
+    console.log(err);
+  }
+});
 
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', function(req, res){
@@ -15,10 +23,12 @@ app.get('/', function(req, res){
 });
 
 app.get('/new', function(req, res){
-  client.connect(err => {
+//   client.connect(err => {
   
-  if (err){
-    res.send(err);		
+  
+// });
+if (error){
+    res.send(error);    
   } else {
 const collection = client.db("test").collection("wabbitseason");
   var entry1 = {im : 'not hunting', some: 'wabbits'};
@@ -31,15 +41,176 @@ const collection = client.db("test").collection("wabbitseason");
   }
 });
 
-});
-
 //app.get('/show', function(req, res){
 //client.connect(err => {
 //	if(err)
 //});
 //});
 
+app.get('/leaderboard', function(req, res) {
+   var arr = [];
+   //var error;
+ 
+if (error){
+    res.send(error);    
+  } else {
+const collection = client.db("test").collection("leaderboard");
+ 
+  var found = collection.find();
+  console.log(found);
+ 
+  //var kills = 0;
+  //found.count(function(err, count){
+   // var i = 0;
+    found.forEach(function(doc){
+    // console.log(doc);
+    // console.log("inner");
+    // console.log(arr.length);
+    // if (arr.length == 0) {
+  arr.push(doc);
+  console.log("first");
+  console.log(arr);
+  //kills = doc.kills;    
+  //} else {
+  //if (doc.kills > kills) {
+  
+  //}
+  // for (i = 0; i < arr.length; i++){
+  //   if (parseInt(doc.kills, 10) > arr[i].kills) {
+  //       arr.splice(i, 0, doc);
+  //       console.log("insert");
+  //        console.log(arr);
+  //     break;
+  //   }
+  // }
+ // }
 
-http.listen(8080, function(){
+       console.log(arr.length);
+  //client.close();
+ // i++;
+ if (arr.length == 10) {
+   arr.sort(function(a, b){
+      const killsA = parseInt(a.kills, 10);
+  const killsB = parseInt(b.kills, 10);
+
+  let comparison = 0;
+  if (killsA > killsB) {
+    comparison = -1;
+  } else if (killsA < killsB) {
+    comparison = 1;
+  }
+  return comparison;
+    });
+ console.log(arr);
+  if (arr.length > 0) {
+res.send(arr);
+  }
+  else {
+res.send("No leaderboard")
+  }
+
+  }
+ 
+   
+
+   });
+    
+ // });
+
+ }
+   
+    //if (arr.length > 0){
+  
+ //    } else {
+  // res.send("Empty");
+ //    }
+    
+  
+
+});
+
+app.post('/posttoboard', function(req, res) {
+ //client.connect(err => {
+  var killfloor = 0;
+  if (error){
+    res.send(error);		
+  } else {
+const collection = client.db("test").collection("leaderboard");
+  
+  var found = collection.find();
+  found.count(function(err, count) {
+    if (err) {
+      console.log(err);
+    }
+ if (count < 10) {
+	console.log(req.body);
+	collection.insertOne(req.body);
+
+//client.close()
+  } else {
+	console.log(req.body);
+ 	//var i = 0;
+  found.forEach((doc) => {
+
+          console.log(doc);
+          console.log(doc.kills);
+          console.log(killfloor);
+	if (killfloor == 0){
+	    killfloor = parseInt(doc.kills, 10);
+      console.log("changing");
+	} 
+	if (parseInt(doc.kills, 10) < killfloor) {
+	    killfloor = parseInt(doc.kills, 10);
+      console.log("shifting");
+	}
+  // i++;
+  // if (i == count - 1) {
+  //   console.log("in");
+  //   return killfloor;
+  // }
+  });
+	itemremoved = false;
+  console.log("kf " + killfloor);
+  found = collection.find();
+	found.forEach((doc) => {
+     console.log("here");
+     console.log(doc.kills);
+     console.log(killfloor);
+	    if (killfloor == parseInt(doc.kills, 10) && !itemremoved) {
+        console.log("kf again" + killfloor);
+		collection.remove(doc);
+      collection.insertOne(req.body);
+    
+		
+    //client.close()
+		itemremoved = true;
+	}
+	});
+  }
+});
+
+
+   res.send("success!");
+  }
+//});
+});
+
+process.on('SIGTERM', shutDown);
+process.on('SIGINT', shutDown);
+
+
+
+
+const server = http.listen(8080, function(){
   console.log('listening on *:8080');
 });
+
+function shutDown() {
+    console.log('Received kill signal, shutting down gracefully');
+    server.close(() => {
+        console.log('Closed out remaining connections');
+        client.close();
+        process.exit(0);
+    });
+}
+

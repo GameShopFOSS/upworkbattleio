@@ -60,8 +60,8 @@ const collection = client.db("test").collection("leaderboard");
   console.log(found);
  
   //var kills = 0;
-  //found.count(function(err, count){
-   // var i = 0;
+  found.count(function(err, count){
+    var i = 0;
     found.forEach(function(doc){
     // console.log(doc);
     // console.log("inner");
@@ -87,9 +87,10 @@ const collection = client.db("test").collection("leaderboard");
 
        console.log(arr.length);
   //client.close();
- // i++;
- if (arr.length == 10) {
-   arr.sort(function(a, b){
+  i++;
+ if (arr.length == count) {
+  
+arr.sort(function(a, b){
       const killsA = parseInt(a.kills, 10);
   const killsB = parseInt(b.kills, 10);
 
@@ -108,15 +109,15 @@ res.send(arr);
   else {
 res.send("No leaderboard")
   }
-
+  
   }
  
    
 
    });
     
- // });
-
+  });
+ 
  }
    
     //if (arr.length > 0){

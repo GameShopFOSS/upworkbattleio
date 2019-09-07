@@ -7,6 +7,7 @@ const MongoClient = require('mongodb').MongoClient;
 const uri = "mongodb+srv://joshua:upworkbattleio@cluster0-ubdqx.gcp.mongodb.net/test?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 var error;
+var sessionId = 0;
 client.connect(err => {
   error = err;
   if (err) {
@@ -109,7 +110,7 @@ res.send(arr);
   else {
 res.send("No leaderboard")
   }
-  
+
   }
  
    
@@ -130,72 +131,136 @@ res.send("No leaderboard")
 
 });
 
+app.post('*/requestsessionid', function(req, res){
+  
+ 
+  const collection = client.db("test").collection("sessionId");
+  var found = collection.find();
+  var update;
+  found.count(function(err, count) {
+    var newValue = 0;
+    if (count == 0) {
+       var myquery = { table: "Session ID" };
+        var newvalues = { $set: { sessionId: newValue } };
+      update = collection.updateOne(myquery, newvalues, {upsert: true} ,function(err, res) {});
+       res.send("" + newValue);
+    } else {
+      found.forEach((doc) => {
+        newValue = doc.sessionId + 1;
+        if (newValue > 1000000) {
+          newValue = 0;
+        }
+          var myquery = { table: "Session ID" };
+          var newvalues = { $set: { sessionId: newValue } };
+         update = collection.updateOne(myquery, newvalues, {upsert: true} ,function(err, res) {});
+          res.send("" + newValue);
+      });
+    }
+  });
+
+  // found.forEach((doc) => {
+   
+  // });
+  // sessionId++;
+  // if (sessionId > 100000000){
+  //   sessionId = 0;
+  // }
+  // res.send(sessionId);
+
+});
+
+//**OLD**
+// app.post('*/posttoboard', function(req, res) {
+//  //client.connect(err => {
+//   var killfloor = 0;
+//   if (error){
+//     res.send(error);		
+//   } else {
+// const collection = client.db("test").collection("leaderboard");
+  
+//   var found = collection.find();
+//   found.count(function(err, count) {
+//     if (err) {
+//       console.log(err);
+//     }
+//  if (count < 10) {
+// 	console.log(req.body);
+// 	collection.insertOne(req.body);
+
+// //client.close()
+//   } else {
+// 	console.log(req.body);
+//  	//var i = 0;
+//   found.forEach((doc) => {
+
+//           console.log(doc);
+//           console.log(doc.kills);
+//           console.log(killfloor);
+// 	if (killfloor == 0){
+// 	    killfloor = parseInt(doc.kills, 10);
+//       console.log("changing");
+// 	} 
+// 	if (parseInt(doc.kills, 10) < killfloor) {
+// 	    killfloor = parseInt(doc.kills, 10);
+//       console.log("shifting");
+// 	}
+//   // i++;
+//   // if (i == count - 1) {
+//   //   console.log("in");
+//   //   return killfloor;
+//   // }
+//   });
+// 	itemremoved = false;
+//   console.log("kf " + killfloor);
+//   found = collection.find();
+// 	found.forEach((doc) => {
+//      console.log("here");
+//      console.log(doc.kills);
+//      console.log(killfloor);
+// 	    if (killfloor == parseInt(doc.kills, 10) && !itemremoved) {
+//         console.log("kf again" + killfloor);
+// 		collection.remove(doc);
+//       collection.insertOne(req.body);
+    
+		
+//     //client.close()
+// 		itemremoved = true;
+// 	}
+// 	});
+//   }
+// });
+
+
+//    res.send("success!");
+//   }
+// //});
+// });
+
 app.post('*/posttoboard', function(req, res) {
  //client.connect(err => {
-  var killfloor = 0;
+  //var killfloor = 0;
   if (error){
-    res.send(error);		
+    res.send(error);    
   } else {
-const collection = client.db("test").collection("leaderboard");
+  const collection = client.db("test").collection("leaderboard");
   
   var found = collection.find();
-  found.count(function(err, count) {
+  
     if (err) {
       console.log(err);
     }
- if (count < 10) {
-	console.log(req.body);
-	collection.insertOne(req.body);
 
-//client.close()
-  } else {
-	console.log(req.body);
- 	//var i = 0;
-  found.forEach((doc) => {
-
-          console.log(doc);
-          console.log(doc.kills);
-          console.log(killfloor);
-	if (killfloor == 0){
-	    killfloor = parseInt(doc.kills, 10);
-      console.log("changing");
-	} 
-	if (parseInt(doc.kills, 10) < killfloor) {
-	    killfloor = parseInt(doc.kills, 10);
-      console.log("shifting");
-	}
-  // i++;
-  // if (i == count - 1) {
-  //   console.log("in");
-  //   return killfloor;
-  // }
-  });
-	itemremoved = false;
-  console.log("kf " + killfloor);
-  found = collection.find();
-	found.forEach((doc) => {
-     console.log("here");
-     console.log(doc.kills);
-     console.log(killfloor);
-	    if (killfloor == parseInt(doc.kills, 10) && !itemremoved) {
-        console.log("kf again" + killfloor);
-		collection.remove(doc);
-      collection.insertOne(req.body);
-    
-		
-    //client.close()
-		itemremoved = true;
-	}
-	});
-  }
-});
+  console.log(req.body);
+  var myquery = { player: req.body.player, sessionId: req.body.sessionId};
+  var newvalues = { $set: { kills: req.body.kills } };
+  update = collection.updateOne(myquery, newvalues, {upsert: true} ,function(err, res) {});
+  //collection.insertOne(req.body);
 
 
    res.send("success!");
   }
 //});
 });
-
 process.on('SIGTERM', shutDown);
 process.on('SIGINT', shutDown);
 

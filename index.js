@@ -129,7 +129,7 @@ res.send("No leaderboard")
     
   
 
-});
+});te
 
 app.get('*/requestsessionid', function(req, res){
   
@@ -246,9 +246,9 @@ app.post('*/posttoboard', function(req, res) {
   
   var found = collection.find();
   
-    if (err) {
-      console.log(err);
-    }
+    // if (err) {
+    //   console.log(err);
+    // }
 
   console.log(req.body);
   var myquery = { player: req.body.player, sessionId: req.body.sessionId};

@@ -131,7 +131,7 @@ res.send("No leaderboard")
 
 });
 
-app.post('*/requestsessionid', function(req, res){
+app.get('*/requestsessionid', function(req, res){
   
  
   const collection = client.db("test").collection("sessionId");

@@ -129,7 +129,7 @@ res.send("No leaderboard")
     
   
 
-});te
+});//te
 
 app.get('*/requestsessionid', function(req, res){
   

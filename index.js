@@ -146,7 +146,7 @@ app.post('*/requestsessionid', function(req, res){
        res.send("" + newValue);
     } else {
       found.forEach((doc) => {
-        newValue = doc.sessionId + 1;
+        newValue = parseInt(doc.sessionId, 10) + 1;
         if (newValue > 1000000) {
           newValue = 0;
         }
